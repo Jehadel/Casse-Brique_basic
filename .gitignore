@@ -1,0 +1,6 @@
+#ignore ALL .log files
+*.log
+
+#ignore ALL .swp or .swo files
+.*.swp
+.*.swo
