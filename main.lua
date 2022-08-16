@@ -78,12 +78,12 @@ function CreationNiveau(pChoix)
   pChoix = "aleatoire" -- pour le dév du jeu avant que le système de niveau soit créé
   if pChoix == "aleatoire" then
     
-    -- création d'un niveau aléatoire, on crée d'abord une surface 6x15 de briques de base
+    -- création d'un niveau aléatoire, on crée d'abord une surface 6x16 de briques de base
     niveau = {}
     local l, c
     for l = 1, 6 do
       niveau[l] = {}
-      for c = 1, 15 do
+      for c = 1, 16 do
         niveau[l][c] = 1
       end
     end
@@ -91,8 +91,8 @@ function CreationNiveau(pChoix)
     -- on positionne aléatoirement les autres types de briques (solides, bonus/malus, etc.)
     local nbr
     math.randomseed(os.time())
-    for nbr = 1, 15 do
-      niveau[math.random(1,6)][math.random(1,15)] = math.random(2,8)
+    for nbr = 1, 16 do
+      niveau[math.random(1,6)][math.random(1,16)] = math.random(2,8)
     end
   
     -- on positionne enfin la brique de victoire
@@ -107,8 +107,8 @@ function love.load()
   largeur = love.graphics.getWidth()
   hauteur = love.graphics.getHeight()
 
-  brique.hauteur = 25
-  brique.largeur = largeur / 15
+  brique.hauteur = hauteur / 24
+  brique.largeur = largeur / 16
 
   pad.y = hauteur - pad.hauteur
   Demarre()
@@ -159,10 +159,10 @@ function love.update(dt)
       -- on vérifie si collision avec brique
 
       local c = math.floor(balle.x / brique.largeur) + 1
-      local l = math.floor((balle.y-15) / brique.hauteur) + 1
+      local l = math.floor((balle.y-16) / brique.hauteur) + 1
 
       if l >= 1 and l <= #niveau then
-        if c >= 1 and c <= 15 then
+        if c >= 1 and c <= 16 then
           if niveau[l][c] >= 1 and niveau[l][c] < 6 then
             balle.diry = balle.diry * -1
             pad.score = pad.score + niveau[l][c] * 10
@@ -397,10 +397,10 @@ function love.draw()
   if ecran == "jeu" then
 
     local l, c
-    local bx, by = 0, 15
+    local bx, by = 0, 16
     for l = 1, 6 do
       bx = 0
-      for c = 1, 15 do
+      for c = 1, 16 do
 
         if niveau[l][c] > 0 and niveau[l][c] < 6 then
           -- Dessine une brique
