@@ -6,7 +6,7 @@
 -- x gérer l'affichage si gagné ou perdu (centrer texte)
 -- x intervertir ordre aléatoire/niveaux dans le menu
 -- x Ajouter le nom du jeu sur menu et indiquer "faitre vore choix" plutot que menu
--- o faire un système de niveau (différents niveaux)
+-- x faire un système de niveau (différents niveaux)
 -- x faire un système de bonus/malus (vitesse balle, vitesse pad, largeur pad...)
 -- x rajouter du son
 -- o gérer la "pénétration" par le côté sur les briques
@@ -15,6 +15,14 @@
 -- x fignoler la sélection du menu (afficher un sélecteur, changer le couleur du choix sélectionné
 -- x indiquer sur le menu comment sélectionner (espace + entrée)
 -- o internationaliser le code (anglais, etc.)
+--
+-- BUGS
+-- 
+-- o la balle pénètre dans les briques parfois
+-- o la balle démarre avec une vitesse très lente parfois
+-- o l'écran "you win" ou "you lose" ne s'affiche qu'une fraction de seconde
+
+require 'levels'
 
 --Empêche le filtrage des contours
 love.graphics.setDefaultFilter('nearest')
@@ -27,6 +35,7 @@ pad.hauteur = 20
 pad.actif = true
 pad.score = 0
 pad.nbriques = 0
+pad.niveau = 1
 
 local balle = {}
 balle.x = 0
@@ -75,7 +84,7 @@ end
 
 
 function CreationNiveau(pChoix)
-  pChoix = "aleatoire" -- pour le dév du jeu avant que le système de niveau soit créé
+  --pChoix = "aleatoire" -- pour le dév du jeu avant que le système de niveau soit créé
   if pChoix == "aleatoire" then
     
     -- création d'un niveau aléatoire, on crée d'abord une surface 6x16 de briques de base
@@ -97,6 +106,17 @@ function CreationNiveau(pChoix)
   
     -- on positionne enfin la brique de victoire
     niveau[1][1] = 9
+  
+  
+   elseif pChoix == 'niveaux' then
+     niveau = {}
+     for l = 1, #levels[pad.niveau].map do
+       niveau[l] = {}
+       for c = 1, #levels[pad.niveau].map[1] do
+         niveau[l][c] = levels[pad.niveau].map[l][c]
+       end
+     end
+
   end
   
 end
@@ -200,7 +220,15 @@ function love.update(dt)
             end
             niveau[l][c] = 0
           elseif niveau[l][c] == 9 then 
-            ecran = "You win!" 
+            pad.niveau = pad.niveau + 1
+            if pad.niveau > #levels then
+              ecran = "You win!" 
+              pad.niveau = 1
+            else
+              balle.colle = true
+              sonDemarre:play()
+              CreationNiveau('niveaux')
+            end
           end
         end
       end
@@ -398,7 +426,7 @@ function love.draw()
 
     local l, c
     local bx, by = 0, 16
-    for l = 1, 6 do
+    for l = 1, #niveau do
       bx = 0
       for c = 1, 16 do
 
@@ -439,7 +467,7 @@ function love.draw()
     love.graphics.setFont(font)
     
     love.graphics.setColor(.7, .7, .7 )
-    love.graphics.print('Balls: '..tostring(balle.nombre)..'      Score: '..tostring(pad.score)..'      Brocken bricks: '..tostring(pad.nbriques))
+    love.graphics.print('Balls: '..tostring(balle.nombre)..'      Score: '..tostring(pad.score)..'      Broken bricks: '..tostring(pad.nbriques)..'       Level: '..tostring(pad.niveau))
     love.graphics.setColor(1, 1, 1)
 
   end
