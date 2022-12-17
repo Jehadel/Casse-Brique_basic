@@ -20,6 +20,7 @@
 -- 
 -- o la balle pénètre dans les briques parfois
 -- o la balle démarre avec une vitesse très lente parfois
+-- o la balle, après une victoire ou une défaite, conserve ses carac (longueur, vitesse balle, etc;) -> la réinitialiser après victoire ou défaite
 -- o l'écran "you win" ou "you lose" ne s'affiche qu'une fraction de seconde
 
 require 'levels'
@@ -74,7 +75,11 @@ function Demarre()
 
   balle.colle = true
   balle.nombre = 3
-  
+  balle.vconst = 280
+  balle.vx = 0
+  balle.vy = 0
+
+  pad.largeur = 80
   pad.score = 0
   pad.nbriques = 0
   pad.x = largeur/2 
@@ -183,6 +188,8 @@ function love.update(dt)
 
       if l >= 1 and l <= #niveau then
         if c >= 1 and c <= 16 then
+          
+          -- brique de différents niveaux de dureté (à 1 à 6), perdent un niveau de dureté à chaque collision
           if niveau[l][c] >= 1 and niveau[l][c] < 6 then
             balle.diry = balle.diry * -1
             pad.score = pad.score + niveau[l][c] * 10
@@ -194,31 +201,49 @@ function love.update(dt)
               sonBriqueDetruite:play()
               pad.nbriques = pad.nbriques + 1
             end
+          
+          -- briques indestructibles, rebond 
           elseif niveau[l][c] == 6 then
             balle.diry = balle.diry * -1
             sonBriqueDure:play()
+          
+          -- briques bonus
           elseif niveau[l][c] == 7 then
             sonBonus:play()
+            -- détermine le bonus au hasard 
             local bonus = math.random(1, 3)
+            -- si la balle n'est pas trop rapide, augmente la vitess de 25%
             if bonus == 1 and balle.vconst < 546 then
               balle.vconst = balle.vconst * 1.25 
+            -- si le pad n'est pas trop large, augmente la largeur de 50% 
             elseif bonus == 2 and pad.largeur < 240 then
               pad.largeur = pad.largeur * 1.5
+            -- balle supplémentaire
             elseif bonus == 3 then
               balle.nombre = balle.nombre + 1
             end
+            -- élimine la brique 
             niveau[l][c] = 0
+          
+          -- briques malus
           elseif niveau[l][c] == 8 then
             sonMalus:play()
+            -- détermine le malus au hasard 
             local malus = math.random(1, 3)
+            -- si la balle n'est pas trop lente, diminue la vitesse de 25% 
             if malus == 1 and balle.vconst > 75 then
               balle.vconst = balle.vconst * .75
+            -- si la raquette n'est pas trop étroite, réduit sa taille de 30%
             elseif malus == 2 and pad.largeur > 80 * .67 then
               pad.largeur = pad.largeur * .67
+            -- perd une balle
             elseif malus == 3 then
               balle.nombre = balle.nombre - 1
             end
-            niveau[l][c] = 0
+           -- supprime la brique
+           niveau[l][c] = 0
+          
+          -- brique de victoire
           elseif niveau[l][c] == 9 then 
             pad.niveau = pad.niveau + 1
             if pad.niveau > #levels then
@@ -230,6 +255,7 @@ function love.update(dt)
               CreationNiveau('niveaux')
             end
           end
+        
         end
       end
 
