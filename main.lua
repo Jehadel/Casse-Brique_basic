@@ -182,9 +182,10 @@ function love.update(dt)
       balle.y = balle.y + balle.vy * balle.diry * dt
 
       -- on vérifie si collision avec brique
-
-      local c = math.floor(balle.x / brique.largeur) + 1
-      local l = math.floor((balle.y-16) / brique.hauteur) + 1
+      bordx_balle = balle.x + (balle.dirx * balle.r)
+      bordy_balle = balle.y + (balle.diry * balle.r)
+      local c = math.floor(bordx_balle / brique.largeur) + 1
+      local l = math.floor((bordy_balle-16) / brique.hauteur) + 1
 
       if l >= 1 and l <= #niveau then
         if c >= 1 and c <= 16 then
