@@ -127,6 +127,12 @@ function CreationNiveau(pChoix)
 end
 
 
+function BordBalle(pCoordo, pDir, pRadius)
+  -- retourne la coordonnée du bord de la balle selon les coordo dans un axe et la direction du mouvement
+  return pCoordo + (pDir * pRadius)
+
+end
+
 function love.load()
 
   largeur = love.graphics.getWidth()
@@ -178,21 +184,42 @@ function love.update(dt)
       balle.x = pad.x
       balle.y = pad.y - balle.r
     else
+      -- on mémorise la position de la balle pour le test de collision
+      local x_pre = balle.x
+      local y_pre = balle.y
       balle.x = balle.x + balle.vx * balle.dirx * dt
       balle.y = balle.y + balle.vy * balle.diry * dt
 
       -- on vérifie si collision avec brique
-      bordx_balle = balle.x + (balle.dirx * balle.r)
-      bordy_balle = balle.y + (balle.diry * balle.r)
-      local c = math.floor(bordx_balle / brique.largeur) + 1
+      bordx_balle = BordBalle(balle.x, balle.dirx, balle.r)
+      bordy_balle = BordBalle(balle.y, balle.diry, balle.r)
+      bordx_pre = BordBalle(x_pre, balle.dirx, balle.r)
+      bordy_pre =BordBalle(y_pre, balle.diry, balle.r)
+      
+      local cpre = math.floor(bordx_pre / brique.largeur) + 1
+      local lpre = math.floor((bordy_pre-16) / brique.hauteur) + 1
+          
+      local c = math.floor(bordx_balle / brique.largeur) + 1 
       local l = math.floor((bordy_balle-16) / brique.hauteur) + 1
-
+     
+            
+      -- gestion des effets selon le type de brique touchée 
       if l >= 1 and l <= #niveau then
         if c >= 1 and c <= 16 then
-          
+          -- modification de la direction de rebond selon le bord ou axe d'impact
+          if cpre >= 1 and cpre <= 16 then
+            if niveau[l][cpre] ~= 0 then
+              balle.diry = balle.diry * -1
+            end
+          end
+          if lpre >= 1 and lpre <= #niveau then
+            if niveau[lpre][c] ~= 0 then
+              balle.dirx = balle.dirx * -1
+            end
+          end
+
           -- brique de différents niveaux de dureté (à 1 à 6), perdent un niveau de dureté à chaque collision
           if niveau[l][c] >= 1 and niveau[l][c] < 6 then
-            balle.diry = balle.diry * -1
             pad.score = pad.score + niveau[l][c] * 10
             if niveau[l][c] > 1 then
               sonBriqueCollision:play()
@@ -205,7 +232,6 @@ function love.update(dt)
           
           -- briques indestructibles, rebond 
           elseif niveau[l][c] == 6 then
-            balle.diry = balle.diry * -1
             sonBriqueDure:play()
           
           -- briques bonus
