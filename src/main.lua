@@ -1,14 +1,3 @@
-
--- o gérer la "pénétration" par le côté sur les briques
--- o internationaliser le code (anglais, etc.)
---
--- BUGS
--- 
--- o la balle pénètre dans les briques parfois
--- o la balle démarre avec une vitesse très lente parfois
--- o la balle, après une victoire ou une défaite, conserve ses carac (longueur, vitesse balle, etc;) -> la réinitialiser après victoire ou défaite
--- o l'écran "you win" ou "you lose" ne s'affiche qu'une fraction de seconde
-
 require 'levels'
 
 -- Are we in love.js? Joysticks are not supported there.
