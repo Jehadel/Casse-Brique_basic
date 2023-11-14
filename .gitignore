@@ -6,7 +6,7 @@
 .*.swo
 
 #ignore conf folder for GitHub Pages
-.github/
+#.github/
 
 #ignore folder containing .love
 Dist/
