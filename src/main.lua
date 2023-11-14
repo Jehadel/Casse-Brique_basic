@@ -36,7 +36,7 @@ balle.r = 10
 balle.colle = false
 balle.vx = 0
 balle.vy = 0
-balle.vconst = 280
+balle.vconst = 0
 balle.dirx = 1
 balle.diry = -1
 balle.angle = math.pi / 4
@@ -66,7 +66,7 @@ function Demarre()
 
   balle.colle = true
   balle.nombre = 3
-  balle.vconst = 280
+  balle.vconst = 500
   balle.vx = 0
   balle.vy = 0
 
@@ -318,6 +318,7 @@ function love.update(dt)
           -- on détermine à quelle distance du centre de la raquetteça tape
           local ximpact = math.abs(balle.x - pad.x)*5/zone + 1
           -- on calcule le nouvel angle avec une fonction sigmoïde centrée sur pi/8 (déterminée empiriquement pour avoir le rebond voulu)
+          -- il y a des méthodes beaucoup plus simples, mais j’avais envie de m’amuser :)
           balle.angle = 1/(1+math.exp(-4*(balle.angle - math.pi/8)))*math.pi/ximpact
           -- on corrige l'angle (si dépasse la verticale ou si trop ouvert, proche de l'horizontale)
           if balle.angle > math.pi/2 then 
