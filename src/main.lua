@@ -11,8 +11,13 @@
 
 require 'levels'
 
---Empêche le filtrage des contours
-love.graphics.setDefaultFilter('nearest')
+-- Are we in love.js? Joysticks are not supported there.
+-- https://github.com/Davidobot/love.js/issues/74
+if love.system.getOS() == "web" then
+  -- Joysticks don't work in love.js
+  -- https://github.com/Davidobot/love.js/issues/41
+  t.modules.joystick = false
+end
 
 local pad = {}
 pad.x = 0
