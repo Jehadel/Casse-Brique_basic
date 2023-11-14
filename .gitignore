@@ -4,3 +4,9 @@
 #ignore ALL .swp or .swo files
 .*.swp
 .*.swo
+
+#ignore conf folder for GitHub Pages
+.github/
+
+#ignore folder containing .love
+Dist/
